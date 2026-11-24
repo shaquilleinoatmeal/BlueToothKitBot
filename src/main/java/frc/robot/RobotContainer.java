@@ -93,7 +93,7 @@ public class RobotContainer {
             )
             .until(() -> drivetrain.getState().Pose.getTranslation().getDistance(start[0]) >= 2.44),//target meters
             // Finally idle for the rest of auton
-            drivetrain.applyRequest(() -> idle);
+            drivetrain.applyRequest(() -> idle)
         );
     }
 }
