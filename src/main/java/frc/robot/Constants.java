@@ -10,10 +10,6 @@ public class Constants {
         public static final double DEADBAND = 0.08;
     }
 
-     public interface Swerve {
-
-    }
-
     public interface Intake {
         static final int INTAKE_MOTOR_ID = 5; //change as needed
         public static final int INTAKE_MOTOR_CURRENT_LIMIT = 40;

@@ -78,11 +78,26 @@ public class RobotContainer {
         driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // Reset the field-centric heading on left bumper press.
-        driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        //driver.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)); to be modified for potential change
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // Operator controls
-        
+        driver.rightBumper().onTrue(
+            new InstantCommand(() -> Robot.getBelt().setBelt(BeltStates.IN), Robot.getBelt())
+        ).onFalse(
+            new InstantCommand(() -> Robot.getBelt().setBelt(BeltStates.OFF), Robot.getBelt())
+        );
+
+        driver.leftBumper().onTrue(
+            new InstantCommand(() -> Robot.getBelt().setBelt(BeltStates.OUT), Robot.getBelt())
+        );
+
+        driver.rightTrigger().whileTrue(
+            new InstantCommand(() -> Robot.getHopper().setStatus(Hopper.Status.RUNNING))
+        );
+        driver.leftTrigger().whileTrue(
+            new InstantCommand(() -> Robot.getHopper().setStatus(Hopper.Status.STOPPED))
+        );
     }
 
     public Command getAutonomousCommand() {
