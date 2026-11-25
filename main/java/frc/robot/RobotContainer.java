@@ -15,9 +15,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Intake.IntakeStates;
+import frc.robot.subsystems.Outtake.OuttakeStates;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -32,8 +35,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final CommandXboxController driver = new CommandXboxController(0);
-    private final CommandXboxController operator = new CommandXboxController(0);
+    private final CommandXboxController driver = new CommandXboxController(Constants.Controllers.DRIVER_PORT);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -47,9 +49,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-driver.getLeftY() * MaxSpeed * 0.6) // Drive forward with negative Y (forward)
-                    .withVelocityY(driver.getLeftX() * MaxSpeed * 0.6) // Drive left with negative X (left)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate * 0.6) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -74,8 +76,20 @@ public class RobotContainer {
 
         // Reset the field-centric heading on left bumper press.
         driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        // Operator controls
+        driver.rightBumper().onTrue(
+            new InstantCommand(() -> Robot.getOuttake().setOuttake(OuttakeStates.OUT), Robot.getOuttake())
+        ).onFalse(
+            new InstantCommand(() -> Robot.getOuttake().setOuttake(OuttakeStates.OFF), Robot.getOuttake())
+        );
+
+        driver.leftBumper().onTrue(
+            new InstantCommand(() -> Robot.getIntake().setIntake(IntakeStates.IN), Robot.getIntake())
+        ).onFalse(
+            new InstantCommand(() -> Robot.getIntake().setIntake(IntakeStates.OFF), Robot.getIntake())
+        );
     }
 
     public Command getAutonomousCommand() {
@@ -91,9 +105,11 @@ public class RobotContainer {
                     .withVelocityY(0)
                     .withRotationalRate(0)
             )
-            .until(() -> drivetrain.getState().Pose.getTranslation().getDistance(start[0]) >= 2.44),//target meters
+            .withTimeout(10.0),
             // Finally idle for the rest of auton
             drivetrain.applyRequest(() -> idle)
         );
+
+
     }
 }
