@@ -9,15 +9,19 @@ import com.ctre.phoenix6.HootAutoReplay;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Belt;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Outtake;
+import frc.robot.subsystems.Shooter;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private final RobotContainer m_robotContainer;
+    private static Hopper hopper;
+    private static Belt belt;
     private static Intake intake;
-    private static Outtake outtake;
+    private static Shooter shooter;
 
     /* log and replay timestamp and joystick data */
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
@@ -27,8 +31,10 @@ public class Robot extends TimedRobot {
     public Robot() {
         m_robotContainer = new RobotContainer();
 
+        hopper = new Hopper();
+        belt = new Belt();
         intake = new Intake();
-        outtake = new Outtake();
+        shooter = new Shooter();
     }
 
     @Override
@@ -88,17 +94,24 @@ public class Robot extends TimedRobot {
     @Override
     public void simulationPeriodic() {}
 
-    public static Outtake getOuttake() {
-    if (outtake == null) {
-      outtake = new Outtake();
-    }
-        return outtake;
-    }
+    public static Hopper getHopper() {
+    if (hopper == null) {
+        hopper = new Hopper();
+    } return hopper; }
+        
 
-  public static Intake getIntake() {
+    public static Belt getBelt() {
+    if (belt == null) {
+        belt = new Belt();
+    } return belt; }
+
+    public static Intake getIntake() {
     if (intake == null) {
-      intake = new Intake();
-    }
-        return intake;
-    }
+        intake = new Intake();
+    } return intake; }
+
+    public static Shooter getShooter() {
+    if (shooter == null) {
+        shooter = new Shooter();
+    } return shooter; }
 }

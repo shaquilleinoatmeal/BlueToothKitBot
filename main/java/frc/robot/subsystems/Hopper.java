@@ -10,27 +10,28 @@ import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
 
 
-
-public class Outtake extends SubsystemBase{
-    private TalonFX outtakeMotor;
+public class Hopper extends SubsystemBase{
+    private final TalonFX hopperMotor;
+    //private final TalonFX altIntakeMotor;
     private final CANBus canbus = TunerConstants.kCANBus;
-    public Outtake() {
+    public Hopper() {
         //create config object 
-        TalonFXConfiguration outtakeConfig = new TalonFXConfiguration();
+        TalonFXConfiguration hopperConfig = new TalonFXConfiguration();
 
-        outtakeMotor = new TalonFX(Constants.Outtake.OUTTAKE_MOTOR_CURRENT_LIMIT, canbus);
-        outtakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        outtakeConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        outtakeMotor.getConfigurator().apply(outtakeConfig);
+        hopperMotor = new TalonFX(Constants.Hopper.HOPPER_MOTOR_CURRENT_LIMIT, canbus);
+
+        hopperConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        hopperConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        hopperMotor.getConfigurator().apply(hopperConfig);
     }
 
-    public enum OuttakeStates {
+    public enum HopperStates {
         // Inward, off, outward
         IN,
         OUT,
         OFF,
     }
-    public void setOuttake(OuttakeStates state) {
+    public void setHopper(HopperStates state) {
         switch (state) {
             case IN:
                 setRawPower(0.01);
@@ -45,7 +46,7 @@ public class Outtake extends SubsystemBase{
     }
 
     public void setRawPower(double power) {
-        outtakeMotor.set(power);
+        hopperMotor.set(power);
     }
 
 }

@@ -19,8 +19,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hopper.HopperStates;
+import frc.robot.subsystems.Belt.BeltStates;
+import frc.robot.subsystems.Shooter.ShooterStates;
 import frc.robot.subsystems.Intake.IntakeStates;
-import frc.robot.subsystems.Outtake.OuttakeStates;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -36,6 +38,7 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController driver = new CommandXboxController(Constants.Controllers.DRIVER_PORT);
+    private final CommandXboxController operator = new CommandXboxController(Constants.Controllers.OPERATOR_PORT);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -79,17 +82,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // Operator controls
-        driver.rightBumper().onTrue(
-            new InstantCommand(() -> Robot.getOuttake().setOuttake(OuttakeStates.OUT), Robot.getOuttake())
-        ).onFalse(
-            new InstantCommand(() -> Robot.getOuttake().setOuttake(OuttakeStates.OFF), Robot.getOuttake())
-        );
-
-        driver.leftBumper().onTrue(
-            new InstantCommand(() -> Robot.getIntake().setIntake(IntakeStates.IN), Robot.getIntake())
-        ).onFalse(
-            new InstantCommand(() -> Robot.getIntake().setIntake(IntakeStates.OFF), Robot.getIntake())
-        );
+        
     }
 
     public Command getAutonomousCommand() {
@@ -105,7 +98,7 @@ public class RobotContainer {
                     .withVelocityY(0)
                     .withRotationalRate(0)
             )
-            .withTimeout(10.0),
+            .withTimeout(6.6),
             // Finally idle for the rest of auton
             drivetrain.applyRequest(() -> idle)
         );
