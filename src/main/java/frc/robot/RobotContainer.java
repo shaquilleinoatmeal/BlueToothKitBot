@@ -82,21 +82,30 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // Operator controls
+        // Belt
         driver.rightBumper().onTrue(
             new InstantCommand(() -> Robot.getBelt().setBelt(BeltStates.IN), Robot.getBelt())
         ).onFalse(
             new InstantCommand(() -> Robot.getBelt().setBelt(BeltStates.OFF), Robot.getBelt())
         );
 
+        // Hopper
         driver.leftBumper().onTrue(
             new InstantCommand(() -> Robot.getBelt().setBelt(BeltStates.OUT), Robot.getBelt())
         );
 
+        // Intake
         driver.rightTrigger().whileTrue(
-            new InstantCommand(() -> Robot.getHopper().setStatus(Hopper.Status.RUNNING))
+            new InstantCommand(() -> Robot.getIntake().setIntake(IntakeStates.IN), Robot.getIntake())
+        ).onFalse(
+            new InstantCommand(() -> Robot.getIntake().setIntake(IntakeStates.OFF), Robot.getIntake())
         );
+        
+        // Shooter
         driver.leftTrigger().whileTrue(
-            new InstantCommand(() -> Robot.getHopper().setStatus(Hopper.Status.STOPPED))
+            new InstantCommand(() -> Robot.getShooter().setShooter(ShooterStates.IN), Robot.getShooter())
+        ).onFalse(
+            new InstantCommand(() -> Robot.getShooter().setShooter(ShooterStates.OFF), Robot.getShooter())
         );
     }
 
